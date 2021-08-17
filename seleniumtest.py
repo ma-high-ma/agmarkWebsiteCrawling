@@ -4,15 +4,28 @@ from selenium.webdriver.chrome.options import Options
 
 
 def wait_for(condition_function):
-  start_time = time.time()
-  while time.time() < start_time + 20:
-    if condition_function():
-      return True
-    else:
-      time.sleep(1)
-  raise Exception(
-   'Timeout waiting for '
-  )
+    start_time = time.time()
+    while time.time() < start_time + 20:
+        if condition_function():
+            return True
+        else:
+            time.sleep(1)
+    raise Exception(
+        'Timeout waiting for '
+    )
+
+
+def page_hasLoaded():
+    try:
+        table = driver.find_element_by_class_name('tableagmark_new')
+        curr = table.find_elements_by_tag_name("tr")[50].find_element_by_tag_name("td").text
+        if curr == last_row:
+            return False
+        else:
+            return True
+    except Exception:
+        return False
+
 
 options = Options()
 options.headless = True
@@ -29,20 +42,7 @@ last_row = table.find_elements_by_tag_name("tr")[50].find_element_by_tag_name("t
 print (last_row)
 table.find_elements_by_tag_name("tr")[52].find_element_by_tag_name("input").click()
 
-
 # time.sleep(10)
-
-def page_hasLoaded():
-    try:
-        table = driver.find_element_by_class_name('tableagmark_new')
-        curr = table.find_elements_by_tag_name("tr")[50].find_element_by_tag_name("td").text
-        if curr == last_row:
-            return False
-        else:
-            return True
-    except Exception:
-        return False
-
 
 wait_for(page_hasLoaded)
 
