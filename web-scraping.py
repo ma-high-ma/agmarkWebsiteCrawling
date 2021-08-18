@@ -40,13 +40,13 @@ def wait_for(condition_function, last_row, driver):
     raise Exception('Timeout')
 
 
-def page_hasLoaded(last_row, driver):
+def page_hasLoaded(first_row, driver):
     try:
         table = driver.find_element_by_class_name('tableagmark_new')
-        curr = table.find_elements_by_tag_name("tr")[-3].find_element_by_tag_name("td").text
+        curr = table.find_elements_by_tag_name("tr")[1].find_element_by_tag_name("td").text
 
         # check if last index of last page is same as last index of newly loaded page to confirm loading of new page
-        if curr == last_row:
+        if curr == first_row:
             return False
         else:
             return True
@@ -92,7 +92,7 @@ def data_read_and_insert(driver, conn, tablename):
         table = driver.find_element_by_class_name('tableagmark_new')
 
         # Storing last index of table row in the current page
-        last_row = table.find_elements_by_tag_name("tr")[-3].find_element_by_tag_name("td").text
+        row_first = table.find_elements_by_tag_name("tr")[1].find_element_by_tag_name("td").text
 
         # simulating click action on the next page button
         try:
@@ -104,7 +104,7 @@ def data_read_and_insert(driver, conn, tablename):
             return
 
         # wait till the next page has been loaded
-        wait_for(page_hasLoaded, last_row, driver)
+        wait_for(page_hasLoaded, row_first, driver)
 
 
 # retrieving data from website based on args passed
@@ -196,6 +196,7 @@ def main():
         driver = webdriver.Chrome(options=options, executable_path=DRIVER_PATH)
     except:
         print('driver issue')
+        conn.close()
         return
 
     print('driver set up complete')
@@ -203,6 +204,7 @@ def main():
         parse_all_data_from_website(driver, conn, choice)
     except Exception as e:
         print('Error occured '+e.message)
+    conn.close()
     driver.quit()
 
 
