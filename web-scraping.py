@@ -199,9 +199,10 @@ def main():
         return
 
     print('driver set up complete')
-
-    parse_all_data_from_website(driver, conn, choice)
-
+    try:
+        parse_all_data_from_website(driver, conn, choice)
+    except Exception as e:
+        print('Error occured '+e.message)
     driver.quit()
 
 
