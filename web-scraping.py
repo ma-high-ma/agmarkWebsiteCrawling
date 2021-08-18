@@ -44,7 +44,6 @@ def page_hasLoaded(last_row, driver):
     try:
         table = driver.find_element_by_class_name('tableagmark_new')
         curr = table.find_elements_by_tag_name("tr")[-3].find_element_by_tag_name("td").text
-        # print('curr = ', curr)
 
         # check if last index of last page is same as last index of newly loaded page to confirm loading of new page
         if curr == last_row:
@@ -64,14 +63,12 @@ def data_extraction(page):
     # ignoring the tr with style attribute
     for tr in tomato_price_table.find_all("tr")[1:]:
         t_row = []
-        # print("TR = ",tr.text)
         for td in tr.find_all("td"):
-            # print("TD = ",td.text)
             td_text = td.text.replace('\n', ' ').strip()
             if len(td_text) != 0:
                 t_row.append(td_text)
+        # expected no. of columns is 10 from the website
         if len(t_row) == 10:
-            print(t_row[0])
             table_data.append(t_row)
     return table_data
 
@@ -84,7 +81,6 @@ def data_read_and_insert(driver, conn, tablename):
 
         # extracting data from website table and storing it in a 2D list
         table_values = data_extraction(page_content)
-        # print('length of table values = ', len(table_values))
 
         # If no table data is in the page, then break from loop
         if len(table_values) == 0:
@@ -94,11 +90,9 @@ def data_read_and_insert(driver, conn, tablename):
         insert_into_db(table_values, conn, tablename)
 
         table = driver.find_element_by_class_name('tableagmark_new')
-        # print(table)
 
         # Storing last index of table row in the current page
         last_row = table.find_elements_by_tag_name("tr")[-3].find_element_by_tag_name("td").text
-        # print('last row = ', last_row)
 
         # simulating click action on the next page button
         try:
@@ -146,7 +140,6 @@ def parse_all_data_from_website(driver, conn, task):
 
     # only top 2 commodities are being used for testing purpose and time benefit
     for url_for_each_comm in range(len(commodity_list)):
-        # print(commodity_names[url_for_each_comm])
 
         # driver stores the page obtained from the required URL
         driver = url_manipulation(driver, commodity_list[url_for_each_comm], commodity_names[url_for_each_comm],
@@ -158,7 +151,6 @@ def parse_all_data_from_website(driver, conn, task):
 
 def insert_into_db(data_arr, conn, table_name):
     cursor = conn.cursor()
-    # print(len(data_arr))
     for row in range(len(data_arr)):
         insert_query = "INSERT INTO " + table_name + "(districtname , marketname, commodity, variety , grade, " \
                                                      "minprice , maxprice , modalprice , pricedate , lastmodified ) values (%s, %s, %s, %s, %s, %s, " \
